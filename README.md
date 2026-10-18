@@ -1,21 +1,22 @@
 # Jesus and Mary College Voicebox
 
-Anonymous complaint & suggestion box for the **Jesus and Mary College
-Students' Union**. Static frontend in `public/`, three serverless API
-routes in `api/`, shared auth helper in `lib/`, and data stored in
-Upstash Redis.
+Anonymous complaint & suggestion box for Jesus and Mary College.
+Static frontend in `public/`, serverless API in `api/`, helpers in `lib/`,
+data in Upstash Redis (one database shared by all college sites).
 
-Tracking codes are of the form `JMC-XXXXXX`. All Redis keys live under the
-namespace `du:jmc:voicebox` so the app can safely share one Upstash
-instance with other DU college deployments.
+| Setting | Value |
+|---|---|
+| Tracking-code prefix | `JMC-XXXXXX` |
+| Redis namespace | `du:jmc:voicebox` |
+| Repo / Vercel project | `jesus-mary-opress` |
 
-## Deploy in 5 minutes
+## Deploy
+1. Push this folder to GitHub (`https://github.com/anubhavbajpaibusiness/jesus-mary-opress.git`) and import it in Vercel.
+2. Environment variables:
+   - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` — identical on every college project
+   - `ADMIN_PASSWORD` — unique per college (use a long one)
+   - `REDIS_NAMESPACE` — optional override, defaults to `du:jmc:voicebox`. Never reuse another college's value.
 
-### 1. Push to GitHub
-```bash
-git init
-git add .
-git commit -m "JMC Voicebox"
-git branch -M main
-git remote add origin https://github.com/anubhavbajpaibusiness/jesus-mary-opress.git
-git push -u origin main
+## Office bearers
+Edit the `TEAM` array in `public/index.html`. Put photos in `public/images/team/`
+and set `photo: "/images/team/president.jpg"`. An empty `TEAM` shows a "coming soon" card.

@@ -13,15 +13,16 @@ function safeEqual(a, b) {
 }
 
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'method_not_allowed' });
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).end('Method not allowed');
   }
 
   try {
     const real = process.env.ADMIN_PASSWORD;
     if (!real) {
-      return res.status(500).json({ error: 'server_error', message: 'ADMIN_PASSWORD not set' });
+      return res.status(500).json({ error: 'ADMIN_PASSWORD not set on server' });
     }
 
     let body = req.body;
@@ -35,12 +36,12 @@ export default async function handler(req, res) {
     const failKey = K.loginFail(ip);
 
     let fails = 0;
-    try { fails = Number(await redis.get(failKey)) || 0; } catch { fails = 0; }
+    try { fails = (await redis.get(failKey)) || 0; } catch { fails = 0; }
 
     if (fails >= MAX_ATTEMPTS) {
       return res.status(429).json({
         error: 'too_many_attempts',
-        retryInSeconds: LOCK_SECONDS,
+        retryInSeconds: LOCK_SECONDS
       });
     }
 
@@ -59,3 +60,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'server_error', message: err.message });
   }
 }
+
